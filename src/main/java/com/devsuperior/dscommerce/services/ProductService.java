@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -34,16 +36,30 @@ public class ProductService {
     public ProductDTO insert(ProductDTO dto) {
 
         Product product = new Product();
-        product.setName(dto.getName());
-        product.setDescription(dto.getDescription());
-        product.setPrice(dto.getPrice());
-        product.setImgUrl(dto.getImgUrl());
+        copyDtoToEntity(dto, product);
+        product = productRepository.save(product);
+
+        return new ProductDTO(product);
+    }
+
+    @Transactional
+    public ProductDTO update(Long id, ProductDTO dto) {
+
+        Product product = productRepository.getReferenceById(id);
+
+        copyDtoToEntity(dto, product);
 
         product = productRepository.save(product);
 
         return new ProductDTO(product);
     }
 
+    private void copyDtoToEntity(ProductDTO dto, Product product) {
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setPrice(dto.getPrice());
+        product.setImgUrl(dto.getImgUrl());
+    }
 }
 
 
